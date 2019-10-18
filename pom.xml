@@ -18,6 +18,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
+			<version>5.1.2.RELEASE</version>
 		</dependency>
 		<!-- C3P0 -->
 		<dependency>
@@ -38,7 +39,19 @@
 
 		<dependency>
 			<groupId>org.dragonli.service</groupId>
-			<artifactId>dragonli-java-tools</artifactId>
+			<artifactId>dragonli-dubbo-service-core</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.dragonli.service</groupId>
+			<artifactId>dragonli-general-service-interfaces</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.dragonli.service</groupId>
+			<artifactId>dragonli-dubbo-service-core</artifactId>
 			<version>1.0</version>
 		</dependency>
 

@@ -3,46 +3,33 @@
  */
 package org.dragonli.service.db.service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
-import java.util.Set;
-
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dragonli.tools.general.DataCachePool;
-import org.redisson.api.RMap;
-import org.redisson.api.RedissonClient;
-
-import com.alibaba.fastjson.JSON;
-import org.dragonli.service.db.service.command.CommandBatchSave;
-import org.dragonli.service.db.service.command.CommandCount;
-import org.dragonli.service.db.service.command.CommandDelete;
-import org.dragonli.service.db.service.command.CommandDeleteMulti;
-import org.dragonli.service.db.service.command.CommandDeleteQuery;
-import org.dragonli.service.db.service.command.CommandExec;
-import org.dragonli.service.db.service.command.CommandExecBatchUpate;
-import org.dragonli.service.db.service.command.CommandGet;
-import org.dragonli.service.db.service.command.CommandGetMulti;
-import org.dragonli.service.db.service.command.CommandList;
-import org.dragonli.service.db.service.command.CommandSave;
-import org.dragonli.service.db.service.command.ICommand;
+import org.dragonli.service.db.service.command.*;
 import org.dragonli.service.db.service.metadata.DBhandler;
 import org.dragonli.service.db.util.DbUtil;
 import org.dragonli.service.db.util.IMultiGetAndSimpleListInAble;
 import org.dragonli.service.db.util.RedisUtil;
+import org.dragonli.service.general.interfaces.general.DbService;
+import org.dragonli.tools.general.DataCachePool;
+import org.redisson.api.RMap;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author dev
- *这个继承自 ServiceBase 其实是不科学的  但是🈶有好多东西是在ServiceBase里面的 暂时先这样 以后在想办法让这件事合理吧
+ * 定义了 db service 的完整逻辑。要使之成为dubbo微服务，则需要有类继承之，
  */
-public class DbCore implements IMultiGetAndSimpleListInAble {
+public class DbCore implements IMultiGetAndSimpleListInAble, DbService {
 
 	protected final static Logger logger = Logger.getLogger(DbCore.class);
 	
@@ -68,20 +55,47 @@ public class DbCore implements IMultiGetAndSimpleListInAble {
 //	public void setRedissonClient(RedissonClient redissonClient) {
 //		this.redissonClient = redissonClient;
 //	}
-	
-	public DbCore()
+
+	@Value("${service.general.db-config.redisKey}") String redisKey;
+	@Value("${service.general.db-config.defaultDbName}") String defaultDbName;
+	@Value("${service.general.db-config.autoUpdateTableName}") String autoUpdateTableName;
+	@Value("${service.general.db-config.primaryKey}") String primaryKey;
+	@Value("${service.general.db-config.versionKey}") String versionKey;
+	@Value("${service.general.db-config.tableNameTag}") String tableNameTag;
+
+	@PostConstruct
+	public void init() throws Exception
 	{
-		super();
-		logger.info("=====new db===");
-	}
-	
-	public DbCore(RedissonClient redissonClient,DBConfig config) 
-	{
-		super();
-		//need config
+		if(null == this.getAllDataSources())
+			throw new Exception("data sources dic must not be null");
+		Map<String, DataSource> allDataSources = new HashMap<>();
+
+		for( DataSource dataSource : this.getAllDataSources()){
+			String url = dataSource.getConnection().getMetaData().getURL();
+			Matcher matcher = Pattern.compile("/([^/\\?]+)\\?").matcher(url);
+			if(!matcher.find()) throw new Exception("no db name found in url:"+url);
+			String key = matcher.group(1);
+			allDataSources.put(key,dataSource);
+		}
+		redisKey = redisKey != null && !"".equals(redisKey.trim()) ? redisKey.trim() : null;
+		DBConfig config = new DBConfig(defaultDbName, redisKey, allDataSources);
 		this.config = config;
-		this.redissonClient = redissonClient;
+		config.setTableNameTag(tableNameTag);
+		config.setAutoUpdateTableName(autoUpdateTableName);
+		config.setVersionKey(versionKey);
+		config.setRedisKey(redisKey);
+		config.setPrimaryKey(primaryKey);
+		this.redissonClient = getRedissonClient();
 		this.dbstart();
+
+	}
+
+	public RedissonClient getRedissonClient(){
+		return null;
+	}
+
+	public List<DataSource> getAllDataSources(){
+		return null;
 	}
 
 	public String getRedisKey() {
