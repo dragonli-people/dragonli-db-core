@@ -1,7 +1,7 @@
 # db core for db-service,db operate api for nodejs!
-1 本项目有两种常见使用姿势：  
-    # a 作为依赖引入，稍作包装成为一个微服务，供其它application(主要是nodejs等语言）使用   
-    # b 作为java项目引入，初始化DbCore后，直接由java代码调用  
+* 本项目有两种常见使用姿势：  
+    * a 作为依赖引入，稍作包装成为一个微服务，供其它application(主要是nodejs等语言）使用   
+    * b 作为java项目引入，初始化DbCore后，直接由java代码调用  
 1 一些通用化配置，可在配置中心配置service.general.db-config节点指定内容。（如果没有特别的需求，建议沿用默认值） 
 1 您可以通过--REDIS_KEY覆盖redis 2级缓存在redis中的路径前缀。当此值为空，则redis 2级缓存不开启。（如果没有特别的需求，并不建议开启此值）  
 1 您可以通过--DEFAULT_DB_NAME覆盖默认数据库的值。不过此值已基本弃用，建议置空  
