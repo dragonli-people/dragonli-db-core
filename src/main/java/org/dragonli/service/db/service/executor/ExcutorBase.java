@@ -20,7 +20,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * @author freeangel
- * @param <E>
  *
  */
 public abstract class ExcutorBase<E,R> implements IExcutor<E,R>, IDataCachePool {
