@@ -19,7 +19,6 @@ import org.dragonli.tools.general.DataCachePool;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -48,46 +47,67 @@ public class DbCore implements IMultiGetAndSimpleListInAble, DbService {
 
     @SuppressWarnings("unused")
     protected RedissonClient redissonClient;
-//	public RedissonClient getRedissonClient() {
+    //	public RedissonClient getRedissonClient() {
 //		return redissonClient;
 //	}
 //
 //	public void setRedissonClient(RedissonClient redissonClient) {
 //		this.redissonClient = redissonClient;
 //	}
-    @Value("${service.general.db-config.redisKey}")
     String redisKey;
-    @Value("${service.general.db-config.defaultDbName}")
     String defaultDbName;
-    @Value("${service.general.db-config.autoUpdateTableName}")
     String autoUpdateTableName;
-    @Value("${service.general.db-config.primaryKey}")
     String primaryKey;
-    @Value("${service.general.db-config.versionKey}")
     String versionKey;
-    @Value("${service.general.db-config.tableNameTag}")
     String tableNameTag;
+    boolean hadGeneralInited = false;
+
     @Autowired
     DataSourceConfigurationUtil dataSourceConfigurationUtil;
     @Autowired
     GeneralConfigurationUtil generalConfigurationUtil;
 
-    public void initByConfig(RedissonClient redissonClient, String configStr,String separator) throws Exception {
-        initByConfig(redissonClient,Arrays.asList(configStr.split(separator)));
+    public void initGenralConfig(){
+        initGenralConfig(null,null,null,null,null,null);
+    }
+
+    public void initGenralConfig(String redisKey,String defaultDbName,String autoUpdateTableName,String primaryKey,String versionKey,String tableNameTag) {
+        this.redisKey =
+                redisKey != null ? redisKey : generalConfigurationUtil.getProperty("service.general.db-config.redisKey",
+                        null);
+        this.defaultDbName = defaultDbName != null ? defaultDbName : generalConfigurationUtil.getProperty(
+                "service.general.db-config.defaultDbName", null);
+        this.autoUpdateTableName =
+                autoUpdateTableName != null ? autoUpdateTableName : generalConfigurationUtil.getProperty(
+                        "service.general.db-config.autoUpdateTableName", "db_service_update");
+        this.primaryKey = primaryKey != null ? primaryKey : generalConfigurationUtil.getProperty(
+                "service.general.db-config.primaryKey", "id");
+        this.versionKey = versionKey != null ? versionKey : generalConfigurationUtil.getProperty(
+                "service.general.db-config.versionKey", "version");
+        this.tableNameTag = tableNameTag != null ? tableNameTag : generalConfigurationUtil.getProperty(
+                "service.general.db-config.tableNameTag", "__TABLE_NAME");
+
+        hadGeneralInited = true;
+    }
+
+    public void initByConfig(RedissonClient redissonClient, String configStr, String separator) throws Exception {
+        initByConfig(redissonClient, Arrays.asList(configStr.split(separator)));
     }
 
     public void initByConfig(RedissonClient redissonClient, String dataSourcesConfigPath) throws Exception {
         List<Object> dataSourcesConfigPathList = generalConfigurationUtil.getList(dataSourcesConfigPath);
-        initByConfig(redissonClient,dataSourcesConfigPathList.stream().map(Object::toString).collect(Collectors.toList()));
+        initByConfig(redissonClient,
+                dataSourcesConfigPathList.stream().map(Object::toString).collect(Collectors.toList()));
     }
 
     public void initByConfig(RedissonClient redissonClient, List<String> dataSourcesConfigPathList) throws Exception {
         List<DataSource> dataSources = dataSourcesConfigPathList.stream().map(
                 path -> dataSourceConfigurationUtil.getDataSource(path)).collect(Collectors.toList());
-        init(redissonClient,dataSources);
+        init(redissonClient, dataSources);
     }
 
     public void init(RedissonClient redissonClient, List<DataSource> dataSources) throws Exception {
+        if(!hadGeneralInited) initGenralConfig();
         if (null == dataSources) throw new Exception("data sources dic must not be null");
         Map<String, DataSource> allDataSources = new HashMap<>();
 
@@ -113,7 +133,7 @@ public class DbCore implements IMultiGetAndSimpleListInAble, DbService {
     public String getRedisKey() {
         //临时写法，容错
         return redisKey;//to redisson;jedisPool == null ? null :(this.config == null ? null : this.config.getRedisKey
-		// ());
+        // ());
     }
 //
 //	public void setRedisKey(String redisKey) {

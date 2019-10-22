@@ -13,6 +13,26 @@
 	<name>dragonli-db-core</name>
 	<version>1.0</version>
 
+	<description>a db operate lib project,It can be provided to nodejs and other languages with a little encapsulation</description>
+	<url>https://github.com/dragonli-people/dragonli-db-core</url>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>dragonli studio team</name>
+			<email>dragonlistudio@gmail.com</email>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git@github.com:dragonli-people/dragonli-db-core.git</connection>
+		<developerConnection>scm:git:git@github.com:dragonli-people/dragonli-db-core.git</developerConnection>
+		<url>git@github.com:dragonli-people/dragonli-db-core.git</url>
+	</scm>
+
 	<dependencies>
 
 		<dependency>
