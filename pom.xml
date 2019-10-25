@@ -11,7 +11,7 @@
 	<artifactId>dragonli-db-core</artifactId>
 	<packaging>jar</packaging>
 	<name>dragonli-db-core</name>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 
 	<description>a db operate lib project,It can be provided to nodejs and other languages with a little encapsulation</description>
 	<url>https://github.com/dragonli-people/dragonli-db-core</url>
@@ -66,7 +66,7 @@
 		<dependency>
 			<groupId>org.dragonli.service</groupId>
 			<artifactId>dragonli-general-service-interfaces</artifactId>
-			<version>1.0</version>
+			<version>1.0.2</version>
 		</dependency>
 
 	</dependencies>
