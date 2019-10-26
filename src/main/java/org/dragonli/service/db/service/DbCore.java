@@ -72,7 +72,7 @@ public class DbCore implements IMultiGetAndSimpleListInAble, DbService {
     @Autowired
     GeneralConfigurationUtil generalConfigurationUtil;
 
-    public void iniitGenralConfig(String redisKey){
+    public void initGeneralConfig(String redisKey){
         this.redisKey = redisKey != null ? redisKey :
                 generalConfigurationUtil.getProperty("service.general.db-config.redisKey",null);
         this.redisKey = redisKey != null ? redisKey :
