@@ -19,7 +19,6 @@ import org.dragonli.tools.general.DataCachePool;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -55,28 +54,32 @@ public class DbCore implements IMultiGetAndSimpleListInAble, DbService {
 //	public void setRedissonClient(RedissonClient redissonClient) {
 //		this.redissonClient = redissonClient;
 //	}
-    @Value("${service.general.db-config.redisKey}")
-    String redisKey;
-    @Value("${service.general.db-config.defaultDbName}")
-    String defaultDbName;
-    @Value("${service.general.db-config.autoUpdateTableName}")
-    String autoUpdateTableName;
-    @Value("${service.general.db-config.primaryKey}")
-    String primaryKey;
-    @Value("${service.general.db-config.versionKey}")
-    String versionKey;
-    @Value("${service.general.db-config.tableNameTag}")
-    String tableNameTag;
+    protected String redisKey;
+    protected String defaultDbName;
+    protected String autoUpdateTableName;
+    protected String primaryKey;
+    protected String versionKey;
+    protected String tableNameTag;
+
     @Autowired
     DataSourceConfigurationUtil dataSourceConfigurationUtil;
     @Autowired
     GeneralConfigurationUtil generalConfigurationUtil;
 
-    public void initGeneralConfig(String redisKey){
+    public void initGeneralConfig(String redisKey,String defaultDbName,String autoUpdateTableName,
+            String primaryKey,String versionKey,String tableNameTag){
         this.redisKey = redisKey != null ? redisKey :
                 generalConfigurationUtil.getProperty("service.general.db-config.redisKey",null);
-        this.redisKey = redisKey != null ? redisKey :
-                generalConfigurationUtil.getProperty("service.general.db-config.redisKey",null);
+        this.defaultDbName = defaultDbName != null ? defaultDbName :
+                generalConfigurationUtil.getProperty("service.general.db-config.defaultDbName",null);
+        this.autoUpdateTableName = autoUpdateTableName != null ? autoUpdateTableName :
+                generalConfigurationUtil.getProperty("service.general.db-config.autoUpdateTableName",null);
+        this.primaryKey = primaryKey != null ? primaryKey :
+                generalConfigurationUtil.getProperty("service.general.db-config.primaryKey",null);
+        this.versionKey = versionKey != null ? versionKey :
+                generalConfigurationUtil.getProperty("service.general.db-config.versionKey",null);
+        this.tableNameTag = tableNameTag != null ? tableNameTag :
+                generalConfigurationUtil.getProperty("service.general.db-config.tableNameTag",null);
     }
 
     public void initByConfig(RedissonClient redissonClient, String configStr,String separator) throws Exception {
